@@ -11,6 +11,8 @@ from models import storage
 from models.city import City
 from models.user import User
 from models.place import Place
+from models.state import State
+from models.amenity import Amenity
 
 
 @app_views.route('/cities/<city_id>/places', methods=['GET'],
@@ -101,13 +103,15 @@ def places_search():
 
     data = request.get_json()
 
-    if not data or all(len(data.get(key, [])) == 0
-                       for key in ["states", "cities", "amenities"]):
+    if data is None or not any(
+        data.get(k)
+        for k in ["states", "cities", "amenities"]
+    ):
         places = storage.all(Place).values()
     else:
         places = set()
 
-        # ✅ Get places from states
+        # Get places from states
         if "states" in data:
             for state_id in data["states"]:
                 state = storage.get(State, state_id)
