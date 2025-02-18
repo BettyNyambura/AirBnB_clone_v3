@@ -87,5 +87,5 @@ class DBStorage:
             return self.__session.query(cls).count()
         return sum(
             self.__session.query(model).count()
-            for model in classes.value()
+            for model in classes.values()
         )
