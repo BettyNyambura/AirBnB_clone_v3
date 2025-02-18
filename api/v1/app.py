@@ -1,5 +1,9 @@
 #!/usr/bin/python3
-"""Flask API App"""
+"""
+Flask application for AirBnB clone API v1.
+Handles API requests and applies CORS policies.
+"""
+
 from flask import Flask
 from models import storage
 from api.v1.views import app_views
