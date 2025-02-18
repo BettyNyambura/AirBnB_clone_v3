@@ -1,4 +1,10 @@
 #!/usr/bin/python3
+"""
+View module for handling State objects in API v1.
+Provides RESTful API actions for State objects, including retrieving,
+creating, updating, and deleting states.
+"""
+
 from flask import jsonify, request, abort
 from api.v1.views import app_views
 from models import storage
