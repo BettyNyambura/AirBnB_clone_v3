@@ -85,4 +85,7 @@ class DBStorage:
         """Count the number of objects in storage."""
         if cls and cls in classes.values():
             return self.__session.query(cls).count()
-        return sum(self.__session.query(model).count() for model in classes.value())
+        return sum(
+            self.__session.query(model).count()
+            for model in classes.value()
+        )
