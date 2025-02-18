@@ -24,7 +24,8 @@ def stats():
         "users": "User"
     }
 
-    counts = {key: storage.count(eval(value)) 
+    counts = {
+        key: storage.count(eval(value))
         for key, value in classes.items()
     }
     return jsonify(counts)
