@@ -94,7 +94,7 @@ def update_place(place_id):
 
 
 @app_views.route('/places_search', methods=['POST'], strict_slashes=False)
-def search_places():
+def places_search():
     """Retrieves Place objects based on JSON request body"""
     if not request.is_json:
         abort(400, description="Not a JSON")
@@ -115,7 +115,7 @@ def search_places():
                     for city in state.cities:
                         places.update(city.places)
 
-        # ✅ Get places from cities
+        # Get places from cities
         if "cities" in data:
             for city_id in data["cities"]:
                 city = storage.get(City, city_id)
@@ -125,7 +125,7 @@ def search_places():
         # Convert to list for filtering
         places = list(places)
 
-        # ✅ Filter places by amenities
+        # Filter places by amenities
         if "amenities" in data:
             amenity_ids = set(data["amenities"])
             places = [place for place in places if amenity_ids.issubset(
