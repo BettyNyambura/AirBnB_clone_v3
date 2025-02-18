@@ -22,12 +22,12 @@ def status():
 def stats():
     """Retrieves the number of each object type"""
     classes = {
-        "amenities": "Amenity",
-        "cities": "City",
-        "places": "Place",
-        "reviews": "Review",
-        "states": "State",
-        "users": "User"
+        "amenities": Amenity,
+        "cities": City,
+        "places": Place,
+        "reviews": Review,
+        "states": State,
+        "users": User
     }
 
     counts = {
