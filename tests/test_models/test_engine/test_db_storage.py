@@ -40,8 +40,7 @@ class TestDBStorageDocs(unittest.TestCase):
     def test_pep8_conformance_test_db_storage(self):
         """Test tests/test_models/test_db_storage.py conforms to PEP8."""
         pep8s = pep8.StyleGuide(quiet=True)
-        result = pep8s.check_files(['tests/test_models/test_engine/\
-test_db_storage.py'])
+        result = pep8s.check_files(['tests/test_models/test_engine/test_db_storage.py'])
         self.assertEqual(result.total_errors, 0,
                          "Found code style errors (and warnings).")
 
@@ -67,6 +66,21 @@ test_db_storage.py'])
             self.assertTrue(len(func[1].__doc__) >= 1,
                             "{:s} method needs a docstring".format(func[0]))
 
+    def test_get(self):
+        user = User(email="test@test.com", password="123")
+        storage.new(user)
+        storage.save()
+        self.assertEqual(storage.get(User, user.id), user)
+        self.assertIsNone(storage.get(User, "invalid_id"))
+
+    def test_count(self):
+        initial_count = storage.count()
+        user = User(email="new@test.com", password="456")
+        storage.new(user)
+        storage.save()
+        self.assertEqual(storage.count(), initial_count + 1)
+        self.assertEqual(storage.count(User), 1)
+
 
 class TestFileStorage(unittest.TestCase):
     """Test the FileStorage class"""
@@ -86,3 +100,18 @@ class TestFileStorage(unittest.TestCase):
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_save(self):
         """Test that save properly saves objects to file.json"""
+
+    def test_get(self):
+        user = User(email="test2@test.com", password="1234")
+        storage.new(user)
+        storage.save()
+        self.assertEqual(storage.get(User, user.id), user)
+        self.assertIsNone(storage.get(User, "invalid_id"))
+
+    def test_count(self):
+        initial_count = storage.count()
+        user = User(email="another@test.com", password="567")
+        storage.new(user)
+        storage.save()
+        self.assertEqual(storage.count(), initial_count + 1)
+        self.assertEqual(storage.count(User), 1)
