@@ -81,6 +81,10 @@ def places_search():
     body = request.get_json()
     if type(body) != dict:
         abort(400, description="Not a JSON")
+
+    if not body:
+        return jsonify([place.to_dict() for place in storage.all(Place).values()])
+
     id_states = body.get("states", [])
     id_cities = body.get("cities", [])
     id_amenities = body.get("amenities", [])
@@ -92,7 +96,11 @@ def places_search():
         states = [storage.get(State, _id) for _id in id_states]
         states = [state for state in states if state]
 
-        cities = [city for state in states for city in state.cities]
+        cities = []
+        for state in states:
+            if hasattr(state, "cities"):
+                cities.extend(state.cities)
+
         cities += [storage.get(City, _id) for _id in id_cities]
         cities = [city for city in cities if city]
         cities = list(set(cities))
