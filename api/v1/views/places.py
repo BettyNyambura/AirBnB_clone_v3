@@ -76,7 +76,6 @@ def create_place(city_id):
 
 @app_views.route("/places_search", methods=["POST"],
                  strict_slashes=False)
-@swag_from('documentation/place/put_place.yml', methods=['PUT'])
 def places_search():
     """Retrieves all Place objects depending of the body of the request"""
     body = request.get_json()
