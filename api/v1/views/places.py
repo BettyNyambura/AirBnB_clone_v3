@@ -85,36 +85,29 @@ def places_search():
     id_cities = body.get("cities", [])
     id_amenities = body.get("amenities", [])
     places = []
-    if id_states == id_cities == []:
-        places = storage.all(Place).values()
+
+    if not id_states and not id_cities:
+        places = list(storage.all(Place).values())
     else:
-        states = [
-            storage.get(State, _id) for _id in id_states
-            if storage.get(State, _id)
-        ]
+        states = [storage.get(State, _id) for _id in id_states]
+        states = [state for state in states if state]
+
         cities = [city for state in states for city in state.cities]
-        cities += [
-            storage.get(City, _id) for _id in id_cities
-            if storage.get(City, _id)
-        ]
+        cities += [storage.get(City, _id) for _id in id_cities]
+        cities = [city for city in cities if city]
         cities = list(set(cities))
+      
         places = [place for city in cities for place in city.places]
 
-    amenities = [
-        storage.get(Amenity, _id) for _id in id_amenities
-        if storage.get(Amenity, _id)
-    ]
+    amenities = [storage.get(Amenity, _id) for _id in id_amenities]
+    amenities = [amenity for amenity in amenities if amenity]
 
-    res = []
+    filtered_places = []
     for place in places:
-        res.append(place.to_dict())
-        for amenity in amenities:
-            if amenity not in place.amenities:
-                res.pop()
-                break
+        if all(amenity in place.amenities for amenity in amenities):
+            filtered_places.append(place.to_dict())
 
-    return jsonify(res)
-
+    return jsonify(filtered_places)
 
 @app_views.route('/places/<place_id>', methods=['PUT'],
                  strict_slashes=False)
