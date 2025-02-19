@@ -74,48 +74,40 @@ def create_place(city_id):
     return jsonify(place.to_dict()), 201
 
 
-@app_views.route("/places_search", methods=["POST"],
-                 strict_slashes=False)
+@app_views.route("/places_search", methods=["POST"], strict_slashes=False)
 def places_search():
-    """Retrieves all Place objects depending of the body of the request"""
+    """Retrieves all Place objects based on search filters"""
     body = request.get_json()
-    if type(body) != dict:
+    if body is None:
         abort(400, description="Not a JSON")
-
-    if not body:
-        return jsonify([place.to_dict() for place in storage.all(Place).values()])
 
     id_states = body.get("states", [])
     id_cities = body.get("cities", [])
     id_amenities = body.get("amenities", [])
-    places = []
 
+    # Retrieve all places if no filters provided
     if not id_states and not id_cities:
         places = list(storage.all(Place).values())
     else:
-        states = [storage.get(State, _id) for _id in id_states]
-        states = [state for state in states if state]
+        places = []
 
-        cities = []
-        for state in states:
-            if hasattr(state, "cities"):
-                cities.extend(state.cities)
+        # Retrieve all cities from states
+        states = [storage.get(State, _id) for _id in id_states if storage.get(State, _id)]
+        cities = [city for state in states for city in state.cities]
 
-        cities += [storage.get(City, _id) for _id in id_cities]
-        cities = [city for city in cities if city]
-        cities = list(set(cities))
+        # Retrieve additional cities directly
+        cities += [storage.get(City, _id) for _id in id_cities if storage.get(City, _id)]
+        cities = list(set(cities))  # Remove duplicates
 
+        # Retrieve places from cities
         places = [place for city in cities for place in city.places]
 
-    amenities = [storage.get(Amenity, _id) for _id in id_amenities]
-    amenities = [amenity for amenity in amenities if amenity]
+    # If filtering by amenities, ensure places have all required amenities
+    if id_amenities:
+        amenities = [storage.get(Amenity, _id) for _id in id_amenities if storage.get(Amenity, _id)]
+        places = [place for place in places if all(amenity in place.amenities for amenity in amenities)]
 
-    filtered_places = []
-    for place in places:
-        if all(amenity in place.amenities for amenity in amenities):
-            filtered_places.append(place.to_dict())
-
-    return jsonify(filtered_places)
+    return jsonify([place.to_dict() for place in places])
 
 
 @app_views.route('/places/<place_id>', methods=['PUT'],
