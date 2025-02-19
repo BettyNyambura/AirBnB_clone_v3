@@ -96,7 +96,7 @@ def places_search():
         cities += [storage.get(City, _id) for _id in id_cities]
         cities = [city for city in cities if city]
         cities = list(set(cities))
-      
+
         places = [place for city in cities for place in city.places]
 
     amenities = [storage.get(Amenity, _id) for _id in id_amenities]
@@ -108,6 +108,7 @@ def places_search():
             filtered_places.append(place.to_dict())
 
     return jsonify(filtered_places)
+
 
 @app_views.route('/places/<place_id>', methods=['PUT'],
                  strict_slashes=False)
