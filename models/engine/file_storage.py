@@ -79,7 +79,7 @@ class FileStorage:
 
         all_cls = self.all(cls)
         for value in all_cls.values():
-            if (value.id == id):
+            if str(value.id) == str(id):
                 return value
 
         return None
